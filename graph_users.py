@@ -20,6 +20,9 @@ token_data = {
 }
 
 token_response = requests.post(token_url, data=token_data)
+if token_response.status_code != 200:
+    print(f"Authentication failed: {token_response.status_code}")
+    exit()
 token = token_response.json()["access_token"]
 print("Token acquired successfully")
 
@@ -36,6 +39,10 @@ next_url = graph_url
 
 while next_url:
     response = requests.get(next_url, headers=headers)
+    if response.status_code != 200:
+        print(f"Graph API call failed: {response.status_code}")
+        print(response.json())
+        break
     data = response.json()
     all_users.extend(data["value"])
     next_url = data.get("@odata.nextLink")
