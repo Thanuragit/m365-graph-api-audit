@@ -1,0 +1,5 @@
+Name = input("what is your name ?")
+Age = input("How old are you ?")
+City = input("What is your city ?")
+print("Hello " + Name + " so you are from " + City + " and you are currently " + Age + " years Old.")
+print("so in 10 years you will be " + str(int(Age) + 10) + " years old.")
