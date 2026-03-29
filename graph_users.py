@@ -31,14 +31,19 @@ headers = {
 # Step 3 - Call Graph API with selected fields
 graph_url = "https://graph.microsoft.com/v1.0/users?$select=displayName,mail,department,accountEnabled,assignedLicenses"
 
-response = requests.get(graph_url, headers=headers)
-users = response.json()
+all_users = []
+next_url = graph_url
 
-# Step 4 - Print raw first user so we can see what data is coming back
-print(users["value"][0])
+while next_url:
+    response = requests.get(next_url, headers=headers)
+    data = response.json()
+    all_users.extend(data["value"])
+    next_url = data.get("@odata.nextLink")
+
+print(f"Total users found: {len(all_users)}")
 
 # Step 4 - Print all users with full details
-for user in users["value"]:
+for user in all_users:
     name = user["displayName"]
     email = user["mail"] if user["mail"] else "No email"
     department = user["department"] if user["department"] else "No department"
@@ -52,7 +57,7 @@ with open("users.csv", "w", newline="") as file:
     writer = csv.writer(file)
     writer.writerow(["Name", "Email", "Department", "Status", "Licences"])
     
-    for user in users["value"]:
+    for user in all_users:
         name = user["displayName"]
         email = user["mail"] if user["mail"] else "No email"
         department = user["department"] if user["department"] else "No department"
